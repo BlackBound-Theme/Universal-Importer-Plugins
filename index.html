@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Universal Product Importer Pro - Live Demo</title>
+	<!-- WordPress Dashicons (CDN) -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dashicons/1.0.0/css/dashicons.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="uapi-admin-body">
+	<div class="wrap uapi-wrap">
+
+		<!-- Brand Header -->
+		<div class="uapi-brand-header">
+			<div class="uapi-brand-logo">
+				<img src="Logo.png" alt="Universal Product Importer Pro Logo" style="height: 48px; width: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+				<div>
+					<h1>Universal Product Importer Pro</h1>
+					<span class="uapi-version-badge">v1.1.0 (Live Demo)</span>
+				</div>
+			</div>
+			<div class="uapi-header-actions">
+				<span class="uapi-badge-dark">
+					<span class="dashicons dashicons-yes"></span>
+					WooCommerce Active
+				</span>
+				<a href="#" class="uapi-header-link" onclick="alert('Documentation is included in the full purchase ZIP!'); return false;">
+					<span class="dashicons dashicons-book-alt"></span> Documentation
+				</a>
+			</div>
+		</div>
+
+		<!-- Demo Disclaimer Banner -->
+		<div style="background: #fffbe2; border-left: 4px solid #f59e0b; padding: 12px 16px; margin-bottom: 22px; border-radius: 4px; font-size: 13px; color: #854d0e; display: flex; align-items: flex-start; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+			<span class="dashicons dashicons-info" style="color: #f59e0b; margin-top: 2px;"></span>
+			<div>
+				<strong>Live Demo Notice:</strong> Because this preview is hosted on a static webpage, your browser's security policies (CORS) strictly prevent it from scraping live websites like Amazon.
+				The results you see below are <em>simulations</em> to demonstrate the fast AJAX interface. <strong>The real PHP plugin you download handles true scraping seamlessly from your WordPress server!</strong>
+			</div>
+		</div>
+
+		<!-- Stats Bar -->
+		<div class="uapi-stats-bar">
+			<div class="uapi-stat-card">
+				<div class="uapi-stat-icon --total">
+					<span class="dashicons dashicons-database"></span>
+				</div>
+				<div class="uapi-stat-info">
+					<h3 id="stat-total">0</h3>
+					<p>Total Imported</p>
+				</div>
+			</div>
+			<div class="uapi-stat-card">
+				<div class="uapi-stat-icon --success">
+					<span class="dashicons dashicons-yes-alt"></span>
+				</div>
+				<div class="uapi-stat-info">
+					<h3 id="stat-success">0</h3>
+					<p>Successful</p>
+				</div>
+			</div>
+			<div class="uapi-stat-card">
+				<div class="uapi-stat-icon --failed">
+					<span class="dashicons dashicons-dismiss"></span>
+				</div>
+				<div class="uapi-stat-info">
+					<h3 id="stat-failed">0</h3>
+					<p>Failed</p>
+				</div>
+			</div>
+			<div class="uapi-stat-card">
+				<div class="uapi-stat-icon --queue">
+					<span class="dashicons dashicons-clock"></span>
+				</div>
+				<div class="uapi-stat-info">
+					<h3><span id="stat-delay">5</span>s</h3>
+					<p>Import Delay</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Main Layout -->
+		<div class="uapi-main-layout">
+
+			<!-- Left Column -->
+			<div class="uapi-left-col">
+
+				<!-- URL Preview Panel -->
+				<div class="uapi-panel" id="uapi-preview-panel">
+					<div class="uapi-panel-header">
+						<div class="uapi-panel-header-left">
+							<div class="uapi-panel-icon"><span class="dashicons dashicons-search"></span></div>
+							<div>
+								<h2>Smart URL Preview</h2>
+								<p>Paste any product URL to preview scraped data before importing</p>
+							</div>
+						</div>
+					</div>
+					<div class="uapi-panel-body">
+						<div class="uapi-preview-row">
+							<input type="url" id="uapi-preview-url" placeholder="https://amazon.com/dp/B08XJG8KVG" autocomplete="off" spellcheck="false" />
+							<button type="button" id="uapi-preview-btn" class="uapi-btn uapi-btn-primary">
+								<span class="dashicons dashicons-search"></span> Preview URL
+							</button>
+						</div>
+
+						<!-- Preview Result (injected by JS) -->
+						<div id="uapi-preview-result"></div>
+					</div>
+				</div>
+
+				<!-- Bulk Import Panel -->
+				<div class="uapi-panel" id="uapi-bulk-panel">
+					<div class="uapi-panel-header">
+						<div class="uapi-panel-header-left">
+							<div class="uapi-panel-icon"><span class="dashicons dashicons-portfolio"></span></div>
+							<div>
+								<h2>Bulk URL Importer</h2>
+								<p>Paste up to 100 product URLs — one per line</p>
+							</div>
+						</div>
+					</div>
+					<div class="uapi-panel-body">
+
+						<textarea id="uapi-import-urls" class="uapi-url-textarea" placeholder="https://example.com/product/awesome-widget&#10;https://example.com/product/blue-gadget&#10;https://example.com/product/smart-device"></textarea>
+						<div class="uapi-url-counter">
+							URLs in queue: <strong id="uapi-url-count">0</strong> / 100
+						</div>
+
+						<!-- Taxonomy Row -->
+						<div class="uapi-two-col">
+							<div class="uapi-field">
+								<label for="uapi-import-category">Assign Category</label>
+								<select id="uapi-import-category" multiple>
+									<option value="1">Electronics</option>
+									<option value="2">Gadgets</option>
+									<option value="3">Smart Home</option>
+									<option value="4">Accessories</option>
+								</select>
+								<span class="uapi-field-hint">Hold CTRL / CMD to select multiple.</span>
+							</div>
+							<div class="uapi-field">
+								<label for="uapi-import-tags">Assign Tags</label>
+								<input type="text" id="uapi-import-tags" placeholder="e.g. gadgets, affiliate, deals" />
+								<span class="uapi-field-hint">Comma-separated tags applied to every import.</span>
+							</div>
+						</div>
+
+						<!-- Start Button -->
+						<button type="button" id="uapi-start-import" class="uapi-start-btn">
+							<span class="dashicons dashicons-controls-play"></span> Start Bulk Import
+						</button>
+
+						<!-- Progress UI -->
+						<div id="uapi-progress-wrapper">
+							<div class="uapi-progress-header">
+								<h3>Import Progress</h3>
+								<span class="uapi-progress-count">
+									<span id="uapi-count-current">0</span> / <span id="uapi-count-total">0</span>
+								</span>
+							</div>
+							<div class="uapi-progress-track">
+								<div id="uapi-progress-fill" class="uapi-progress-fill"></div>
+							</div>
+							<div id="uapi-console" class="uapi-console"></div>
+						</div>
+
+					</div>
+				</div>
+
+			</div><!-- /.uapi-left-col -->
+
+			<!-- Right Sidebar -->
+			<div class="uapi-sidebar">
+
+				<!-- Settings Section -->
+				<div class="uapi-settings-section">
+					<div class="uapi-section-title">
+						<span class="dashicons dashicons-admin-settings" style="vertical-align:middle;font-size:13px;margin-right:4px;"></span>
+						Import Configuration
+					</div>
+					<div class="uapi-section-body">
+						<table class="form-table">
+							<tr>
+								<th><label for="uapi_delay">Scrape Delay (sec)</label></th>
+								<td>
+									<input type="number" id="uapi_delay" value="5" min="1" max="60" />
+									<p class="description">Pause between imports. Prevents IP bans.</p>
+								</td>
+							</tr>
+							<tr>
+								<th><label for="uapi_affiliate_id">Affiliate ID</label></th>
+								<td>
+									<input type="text" id="uapi_affiliate_id" placeholder="ref=12345" />
+									<p class="description">Appended to every product URL.</p>
+								</td>
+							</tr>
+							<tr>
+								<th><label for="uapi_button_text">Button Text</label></th>
+								<td>
+									<input type="text" id="uapi_button_text" value="Buy Now" />
+									<p class="description">WooCommerce external product button.</p>
+								</td>
+							</tr>
+							<tr>
+								<th><label for="uapi_default_status">Post Status</label></th>
+								<td>
+									<select id="uapi_default_status">
+										<option value="publish">Published</option>
+										<option value="draft" selected>Draft</option>
+										<option value="pending">Pending Review</option>
+									</select>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+
+				<!-- Tips Section -->
+				<div class="uapi-settings-section">
+					<div class="uapi-section-title">
+						<span class="dashicons dashicons-lightbulb" style="vertical-align:middle;font-size:13px;margin-right:4px;"></span> Pro Tips
+					</div>
+					<div class="uapi-section-body">
+						<div class="uapi-tip-box">
+							<p class="uapi-tip-title">
+								<span class="dashicons dashicons-shield" style="font-size:14px;width:14px;height:14px;"></span> Anti-Ban Best Practices
+							</p>
+							<ul>
+								<li>Keep delay between 5–10 seconds.</li>
+								<li>Import max 50 URLs per session.</li>
+								<li>Use Preview to verify before bulk.</li>
+								<li>Keep this browser tab open during import.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				<!-- Buy on Codester Section -->
+				<div class="uapi-settings-section">
+					<div class="uapi-section-body" style="padding: 15px; text-align: center; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 8px;">
+						<p style="color: #fff; font-size: 13px; margin: 0 0 12px; font-weight: 600;">Get the Full PHP Source Code</p>
+						<a href="https://www.codester.com/blackbound" target="_blank" style="display: block; padding: 10px; background: #eab308; color: #1f2937; text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 14px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(234, 179, 8, 0.4);">
+							<span class="dashicons dashicons-cart"></span> Buy on Codester
+						</a>
+						<p style="color: #94a3b8; font-size: 11px; margin: 10px 0 0;">Demo version. Imports are simulated.</p>
+					</div>
+				</div>
+
+			</div><!-- /.uapi-sidebar -->
+		</div><!-- /.uapi-main-layout -->
+	</div><!-- /.uapi-wrap -->
+
+	<!-- Toast Notification -->
+	<div id="uapi-toast"></div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
